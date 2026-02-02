@@ -10,7 +10,7 @@ WORKDIR /
 
 # Instalar dependencias
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install json time cryptography
 RUN pip install --upgrade pip
 
 # Copiar el código
