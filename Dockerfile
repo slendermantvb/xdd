@@ -18,7 +18,6 @@ RUN pip install --upgrade pip \
 # Copiar el código
 COPY . .
 
-
-
+EXPOSE 9000
 # Comando por defecto: iniciar nodo
 CMD ["python", "main.py"]
