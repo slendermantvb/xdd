@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Directorio de trabajo
-WORKDIR /app
+WORKDIR /
 
 # Instalar dependencias
 COPY requirements.txt .
