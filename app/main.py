@@ -9,10 +9,13 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 # =========================
 nodes = {}
 
-udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udp.bind(("0.0.0.0", 9000))
+UDP_PORT = 9001
+HTTP_PORT = 9000
 
-print("🌍 GCP Rendezvous UDP activo en 9000")
+udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udp.bind(("0.0.0.0", UDP_PORT))
+
+print(f"🌍 GCP Rendezvous UDP activo en {UDP_PORT}")
 
 def udp_loop():
     while True:
@@ -62,8 +65,8 @@ class HealthHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 def http_loop():
-    server = HTTPServer(("0.0.0.0", 9000), HealthHandler)
-    print("🩺 HTTP healthcheck activo en 9000")
+    server = HTTPServer(("0.0.0.0", HTTP_PORT), HealthHandler)
+    print(f"🩺 HTTP healthcheck activo en {HTTP_PORT}")
     server.serve_forever()
 
 # =========================
