@@ -18,8 +18,7 @@ RUN pip install --upgrade pip \
 # Copiar el código
 COPY . .
 
-# Instalar el paquete gcpnode
-RUN pip install .
+
 
 # Comando por defecto: iniciar nodo
 CMD ["python", "main.py"]
