@@ -1,41 +1,44 @@
-import os
-import socket
-import json
-import time
 import threading
+import socket
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-# PUERTOS
-HTTP_PORT = int(os.environ.get("PORT", 9000))
-UDP_PORT = 9001
+# ----------------------------
+# HTTP HEALTHCHECK (9000)
+# ----------------------------
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path in ("/", "/status", "/health"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"GCPNode ONLINE")
+        else:
+            self.send_response(404)
+            self.end_headers()
 
-# =========================
-# UDP SERVER
-# =========================
-def udp_loop():
-    udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp.bind(("0.0.0.0", UDP_PORT))
-    print(f"UDP activo en {UDP_PORT}")
+def start_http():
+    server = HTTPServer(("0.0.0.0", 9000), HealthHandler)
+    print("[HTTP] Healthcheck en puerto 9000")
+    server.serve_forever()
+
+# ----------------------------
+# TU PROTOCOLO REAL (9001)
+# ----------------------------
+def start_gcpnode():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("0.0.0.0", 9001))
+    s.listen()
+    print("[GCPNode] Protocolo activo en puerto 9001")
 
     while True:
-        data, addr = udp.recvfrom(4096)
-        udp.sendto(b"OK", addr)
+        conn, addr = s.accept()
+        print("Nodo conectado:", addr)
+        conn.send(b"GCPNode E2E READY\n")
+        conn.close()
 
-# =========================
-# HTTP HEALTHCHECK
-# =========================
-class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"OK")
-
-def http_loop():
-    print(f"HTTP activo en {HTTP_PORT}")
-    HTTPServer(("0.0.0.0", HTTP_PORT), Handler).serve_forever()
-
-# =========================
+# ----------------------------
 # START
-# =========================
-threading.Thread(target=udp_loop, daemon=True).start()
-http_loop()   # ⚠️ BLOQUEANTE (OBLIGATORIO)
+# ----------------------------
+if __name__ == "__main__":
+    threading.Thread(target=start_http, daemon=True).start()
+    start_gcpnode()
