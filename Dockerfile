@@ -19,5 +19,6 @@ RUN pip install --upgrade pip \
 COPY . .
 
 EXPOSE 9000
+EXPOSE 9001
 # Comando por defecto: iniciar nodo
 CMD ["python", "main.py"]
